@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeCharge — Simulador | FIAP × GoodWe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0B0D18;
+    --panel: #171B2E;
+    --panel-2: #1E2338;
+    --red: #E4293D;
+    --pink: #EC1E67;
+    --green: #34D399;
+    --amber: #F4B740;
+    --blue: #4C8DFF;
+    --text: #F4F5F9;
+    --text-dim: #9096B0;
+    --line: #2A2F48;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% -5%, rgba(228,41,61,0.10), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(236,30,103,0.10), transparent 40%),
+      radial-gradient(circle at 50% 100%, #151934 0%, #07080F 65%);
+    font-family:'Inter', sans-serif;
+    color: var(--text);
+    display:flex; flex-direction:column; align-items:center;
+    padding: 44px 20px 60px;
+  }
+
+  .logo-row{ display:flex; align-items:center; gap:10px; margin-bottom: 18px; }
+  .logo-mark{ width: 38px; height: 38px; position: relative; flex-shrink:0; }
+  .logo-mark svg{ width:100%; height:100%; display:block; }
+  .logo-word{ font-family:'Space Grotesk', sans-serif; font-weight: 800; font-size: 19px; letter-spacing: -0.01em; line-height:1.05; }
+  .logo-word .accent{ background: linear-gradient(135deg, var(--red), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .logo-tag{ font-family:'Space Grotesk', sans-serif; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-dim); margin-top: 1px; }
+
+  .partner-row{ display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom: 10px; }
+  .partner-label{ font-family:'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.02em; color: var(--text-dim); }
+  .partner-x{ color: var(--text-dim); font-size: 12px; opacity: 0.6; }
+  .goodwe-logo{ height: 16px; width: auto; filter: brightness(0) saturate(100%) invert(20%) sepia(80%) saturate(3000%) hue-rotate(340deg) brightness(95%) contrast(95%); }
+
+  .app{ width: 400px; max-width: 100%; }
+
+  .header{ text-align:center; margin-bottom: 22px; }
+  .eyebrow{ display:inline-flex; align-items:center; gap:6px; font-family:'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing:.14em; font-size:10.5px; color: var(--pink); margin-bottom: 10px; border: 1px solid rgba(236,30,103,0.3); background: rgba(236,30,103,0.08); padding: 5px 12px; border-radius: 999px; }
+  .eyebrow .pulse{ width:5px;height:5px;border-radius:50%; background: var(--green); box-shadow: 0 0 0 3px rgba(52,211,153,0.2); }
+  h1{ font-family:'Space Grotesk', sans-serif; font-size: 24px; font-weight:700; margin:0 0 6px; letter-spacing:-0.01em; }
+  .sub{ color: var(--text-dim); font-size: 12.5px; line-height:1.5; max-width:330px; margin:0 auto; }
+
+  .card{ background: linear-gradient(180deg, #191D32, #12152488); border: 1px solid var(--line); border-radius: 22px; padding: 26px 22px; min-height: 440px; display:flex; flex-direction:column; box-shadow: 0 40px 80px -30px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.03); position: relative; overflow: hidden; }
+  .card::before{ content:''; position:absolute; top:-40%; right:-30%; width: 260px; height:260px; border-radius:50%; background: radial-gradient(circle, rgba(228,41,61,0.10), transparent 70%); pointer-events:none; }
+
+  .progress{ display:flex; gap:6px; margin-bottom: 22px; position:relative; z-index:1; }
+  .progress .dot{ flex:1; height:3px; border-radius:3px; background: var(--line); transition: background .3s; }
+  .progress .dot.active{ background: var(--red); }
+  .progress .dot.done{ background: var(--green); }
+
+  .step-eyebrow{ font-family:'Space Grotesk',sans-serif; font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--pink); margin-bottom:6px; }
+  .step-title{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16.5px; margin-bottom:4px; }
+  .step-sub{ color:var(--text-dim); font-size:11.5px; margin-bottom:16px; line-height:1.5; }
+
+  /* ===== STEP 0: vaga selection dashboard ===== */
+  .solar-banner{
+    display:flex; align-items:center; justify-content:space-between;
+    background: var(--panel-2); border:1px solid var(--line); border-radius:13px;
+    padding: 11px 14px; margin-bottom:14px;
+  }
+  .solar-banner .label{ font-size:12px; display:flex; align-items:center; gap:8px; }
+  .solar-banner .label b{ font-family:'Space Grotesk',sans-serif; }
+  .switch{ width:44px; height:24px; border-radius:999px; background:var(--line); position:relative; cursor:pointer; transition: background .2s; flex-shrink:0; }
+  .switch.on{ background: var(--green); }
+  .switch .knob{ width:18px;height:18px;border-radius:50%; background:white; position:absolute; top:3px; left:3px; transition: left .2s; }
+  .switch.on .knob{ left:23px; }
+
+  .capacity-line{ font-size:11px; color: var(--text-dim); text-align:center; margin-bottom:14px; }
+  .capacity-line b{ color: var(--text); font-family:'Space Grotesk',sans-serif; }
+
+  .vaga-card{
+    background: var(--panel-2); border:1px solid var(--line); border-radius:14px;
+    padding:13px 14px; margin-bottom:10px;
+  }
+  .vaga-card.livre{ border-color: rgba(76,141,255,0.4); background: linear-gradient(135deg, rgba(76,141,255,0.08), rgba(76,141,255,0.02)); }
+  .vaga-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .vaga-name{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13.5px; }
+  .vaga-status{ font-size:10px; font-family:'Space Grotesk',sans-serif; text-transform:uppercase; letter-spacing:.05em; padding:3px 9px; border-radius:999px; }
+  .vaga-status.ocupada{ background: rgba(228,41,61,0.14); color:#FF6B7D; }
+  .vaga-status.livre-tag{ background: rgba(76,141,255,0.14); color: var(--blue); }
+
+  .occ-row{ display:flex; align-items:center; gap:10px; }
+  .occ-row select{ flex:1; background: var(--bg); border:1px solid var(--line); color: var(--text); border-radius:8px; padding:7px 8px; font-size:11.5px; font-family:'Inter',sans-serif; }
+  .occ-power{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:13px; width:56px; text-align:right; flex-shrink:0; }
+  .occ-power.full{ color: var(--green); }
+  .occ-power.throttled{ color: var(--amber); }
+
+  .preview-row{ display:flex; gap:8px; }
+  .preview-box{ flex:1; background: var(--bg); border:1px solid var(--line); border-radius:10px; padding:9px 10px; text-align:center; }
+  .preview-box .pt{ font-size:9.5px; color: var(--text-dim); margin-bottom:3px; }
+  .preview-box .pv{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px; }
+  .preview-box .pv.full{ color: var(--green); }
+  .preview-box .pv.throttled{ color: var(--amber); }
+  .preview-box .pp{ font-size:9.5px; color: var(--text-dim); margin-top:3px; }
+
+  .continue-btn{ margin-top:auto; background: linear-gradient(135deg, var(--red), var(--pink)); border:none; color:white; padding:14px; border-radius:12px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; box-shadow: 0 10px 24px -8px rgba(228,41,61,0.5); }
+  .continue-btn:hover{ filter: brightness(1.08); }
+  .continue-btn.secondary{ background: rgba(52,211,153,0.14); border: 1px solid rgba(52,211,153,.4); color: var(--green); box-shadow:none; }
+
+  /* RFID */
+  .rfid-hero{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; position:relative; z-index:1; }
+  .rfid-ring{ width:96px;height:96px;border-radius:50%; border: 2px solid var(--pink); display:flex;align-items:center;justify-content:center; font-size:32px; cursor:pointer; transition: transform .15s; position:relative; background: radial-gradient(circle, rgba(236,30,103,0.08), transparent 70%); }
+  .rfid-ring:hover{ transform: scale(1.04); }
+  .rfid-ring:active{ transform: scale(0.96); }
+  .rfid-ring::before{ content:''; position:absolute; inset:-9px; border-radius:50%; border:1px dashed rgba(236,30,103,.4); animation: spin 8s linear infinite; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  .rfid-title{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; }
+  .rfid-sub{ color:var(--text-dim); font-size:11.5px; text-align:center; line-height:1.6; }
+  .rfid-sub b{ color: var(--text-dim); }
+
+  /* Choice */
+  .choice-card{ background: var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:11px; cursor:pointer; transition: all .15s; display:flex; align-items:center; gap:13px; }
+  .choice-card:hover{ border-color:#3A4066; transform: translateY(-1px); }
+  .choice-card:active{ transform: scale(0.98); }
+  .choice-icon{ width:38px; height:38px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:17px; }
+  .choice-icon.a{ background: rgba(244,183,64,0.12); }
+  .choice-icon.b{ background: rgba(52,211,153,0.12); }
+  .choice-card .tag{ font-family:'Space Grotesk',sans-serif; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin-bottom:3px; }
+  .choice-card .name{ font-weight:600; font-size:14px; margin-bottom:2px; }
+  .choice-card .desc{ font-size:11px; color:var(--text-dim); line-height:1.4; }
+  .choice-card .avail{ font-size:11px; margin-top:5px; font-family:'Space Grotesk',sans-serif; font-weight:600; }
+  .choice-card .avail.full{ color: var(--green); }
+  .choice-card .avail.throttled{ color: var(--amber); }
+
+  /* Result */
+  .result-tag{ font-size:10.5px; color:var(--text-dim); font-family:'Space Grotesk',sans-serif; text-transform:uppercase; letter-spacing:.08em; }
+  .source-badge{ display:inline-flex; align-items:center; gap:7px; padding:7px 12px; border-radius:999px; font-size:12px; font-weight:600; margin: 8px 0 14px; }
+  .source-badge.solar{ background: rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,.35); color:var(--green); }
+  .source-badge.rede{ background: rgba(228,41,61,0.12); border:1px solid rgba(228,41,61,.35); color:#FF6B7D; }
+  .source-badge.urgente{ background: rgba(244,183,64,0.12); border:1px solid rgba(244,183,64,.35); color:var(--amber); }
+
+  .throttle-warning{
+    display:flex; gap:8px; align-items:flex-start;
+    background: rgba(244,183,64,0.08); border:1px solid rgba(244,183,64,0.28);
+    border-radius: 11px; padding: 10px 12px; margin-bottom: 12px;
+    font-size: 11px; color: var(--text-dim); line-height:1.5;
+  }
+
+  .price-box{ background: linear-gradient(180deg, var(--panel-2), #171B2E); border:1px solid var(--line); border-radius:16px; padding:16px; text-align:center; margin-bottom:12px; }
+  .price-box .label{ font-size:10.5px; color:var(--text-dim); margin-bottom:5px; }
+  .price-box .value{ font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:700; }
+  .price-box .value span{ font-size:12.5px; color:var(--text-dim); font-weight:500; }
+
+  .kwh-input-row{ display:flex; align-items:center; gap:10px; background: var(--panel-2); border:1px solid var(--line); border-radius:14px; padding: 11px 13px; margin-bottom:12px; }
+  .kwh-input-row label{ font-size:11px; color: var(--text-dim); flex:1; }
+  .kwh-input-row input{ width:60px; background: var(--bg); border:1px solid var(--line); color: var(--text); border-radius:8px; padding:7px; font-family:'Space Grotesk',sans-serif; font-weight:600; text-align:center; font-size:12.5px; }
+  .kwh-input-row .unit{ font-size:10.5px; color: var(--text-dim); }
+
+  .meta-row{ display:flex; justify-content:space-between; font-size:11.5px; padding:8px 2px; border-bottom:1px solid var(--line); }
+  .meta-row span:first-child{ color:var(--text-dim); }
+  .meta-row:last-of-type{ border-bottom:none; }
+  .meta-row .highlight{ color: var(--text); font-weight:600; }
+
+  .reset-btn{ margin-top:auto; background: transparent; border:1px solid var(--line); color:var(--text-dim); padding:12px; border-radius:12px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12px; cursor:pointer; }
+  .reset-btn:hover{ border-color:#3A4066; color:var(--text); }
+
+  .receipt{ text-align:center; }
+  .receipt-icon{ width:52px;height:52px;border-radius:50%; background: rgba(52,211,153,0.14); border:1px solid rgba(52,211,153,.4); display:flex;align-items:center;justify-content:center; font-size:24px; margin: 4px auto 12px; }
+  .receipt-title{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px; margin-bottom:4px; }
+  .receipt-sub{ color:var(--text-dim); font-size:11.5px; margin-bottom:16px; }
+  .pix-box{ background: var(--panel-2); border:1px dashed #3A4066; border-radius:14px; padding:15px; margin-bottom:12px; text-align:left; }
+  .pix-box .row{ display:flex; justify-content:space-between; font-size:11px; padding:5px 0; }
+  .pix-box .row span:first-child{ color: var(--text-dim); }
+  .pix-box .row.total{ border-top:1px solid var(--line); margin-top:4px; padding-top:9px; font-size:13.5px; font-weight:700; font-family:'Space Grotesk',sans-serif; }
+  .pix-tag{ display:inline-flex; align-items:center; gap:5px; font-size:9.5px; color: var(--blue); background: rgba(76,141,255,0.1); border:1px solid rgba(76,141,255,0.3); padding:4px 9px; border-radius:999px; margin-bottom:10px; font-family:'Space Grotesk',sans-serif; font-weight:600; }
+
+  .hidden{ display:none !important; }
+
+  .about{ width: 400px; max-width:100%; margin-top: 30px; display:grid; grid-template-columns: repeat(3,1fr); gap:12px; }
+  .about-item{ background: var(--panel); border:1px solid var(--line); border-radius:13px; padding: 14px 12px; text-align:center; }
+  .about-item .ic{ font-size:17px; margin-bottom:6px; }
+  .about-item .t{ font-family:'Space Grotesk',sans-serif; font-size:10.5px; font-weight:600; margin-bottom:3px; }
+  .about-item .d{ font-size:10px; color:var(--text-dim); line-height:1.5; }
+
+  .sources-box{ width: 400px; max-width:100%; margin-top: 18px; background: var(--panel); border:1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+  .sources-box .t{ font-family:'Space Grotesk',sans-serif; font-size:11px; font-weight:600; margin-bottom:8px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.06em; }
+  .sources-box ul{ margin:0; padding-left:16px; font-size:11px; color: var(--text-dim); line-height:1.8; }
+
+  .footnote{ text-align:center; margin-top:22px; font-size:11px; color:var(--text-dim); max-width:340px; line-height:1.6; }
+</style>
+</head>
+<body>
+
+<div class="logo-row">
+  <div class="logo-mark">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg1" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#E4293D"/>
+          <stop offset="1" stop-color="#EC1E67"/>
+        </linearGradient>
+      </defs>
+      <rect x="1" y="1" width="38" height="38" rx="11" fill="#171B2E" stroke="url(#lg1)" stroke-width="1.4"/>
+      <path d="M22 8 L11 22 H18.5 L16.5 32 L29 16.5 H21 L22 8 Z" fill="url(#lg1)"/>
+    </svg>
+  </div>
+  <div>
+    <div class="logo-word">We<span class="accent">Charge</span></div>
+    <div class="logo-tag">by ChargeGrid Intelligence</div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="header">
+    <div class="partner-row">
+      <span class="partner-label">FIAP</span>
+      <span class="partner-x">×</span>
+      <img src="data:image/png;base64,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" alt="GoodWe" class="goodwe-logo">
+    </div>
+    <div class="eyebrow"><span class="pulse"></span>Simulador funcional · sem backend</div>
+    <h1>WeCharge: orquestrando cada recarga</h1>
+    <p class="sub">Tarifas baseadas em valores reais de mercado (2026) — não são estimativas aleatórias.</p>
+  </div>
+
+  <div class="card">
+    <div class="progress">
+      <div class="dot" data-step="1"></div>
+      <div class="dot" data-step="2"></div>
+      <div class="dot" data-step="3"></div>
+      <div class="dot" data-step="4"></div>
+    </div>
+
+    <!-- STEP 0: vaga dashboard -->
+    <div id="step0">
+      <div class="step-eyebrow">Mercadinho Bom Preço · 3 vagas</div>
+      <div class="step-title">Escolha sua vaga</div>
+      <div class="step-sub">Veja o que cada vaga está usando agora e quanta potência sobraria pra você em cada modo.</div>
+
+      <div class="solar-banner">
+        <div class="label" id="solarLabel">🔌 <b>Sem energia solar disponível</b></div>
+        <div class="switch" id="solarSwitch" onclick="toggleSolarGlobal()"><div class="knob"></div></div>
+      </div>
+      <div class="capacity-line" id="capacityLine">Capacidade total agora: <b>—</b></div>
+
+      <div class="vaga-card">
+        <div class="vaga-top">
+          <div class="vaga-name">Vaga 01</div>
+          <div class="vaga-status ocupada">Ocupada</div>
+        </div>
+        <div class="occ-row">
+          <select id="occ0" onchange="recalcularVagas()">
+            <option value="urgente" selected>⚡ Urgente</option>
+            <option value="economizar">🌱 Economizar</option>
+            <option value="off">Livre agora</option>
+          </select>
+          <div class="occ-power" id="occPower0">—</div>
+        </div>
+      </div>
+
+      <div class="vaga-card">
+        <div class="vaga-top">
+          <div class="vaga-name">Vaga 03</div>
+          <div class="vaga-status ocupada">Ocupada</div>
+        </div>
+        <div class="occ-row">
+          <select id="occ2" onchange="recalcularVagas()">
+            <option value="urgente">⚡ Urgente</option>
+            <option value="economizar" selected>🌱 Economizar</option>
+            <option value="off">Livre agora</option>
+          </select>
+          <div class="occ-power" id="occPower2">—</div>
+        </div>
+      </div>
+
+      <div class="vaga-card livre">
+        <div class="vaga-top">
+          <div class="vaga-name">Vaga 02 · sua vaga</div>
+          <div class="vaga-status livre-tag">Livre</div>
+        </div>
+        <div class="preview-row">
+          <div class="preview-box">
+            <div class="pt">⚡ Se Urgente</div>
+            <div class="pv" id="prevUrgente">—</div>
+            <div class="pp" id="prevUrgentePreco">—</div>
+          </div>
+          <div class="preview-box">
+            <div class="pt">🌱 Se Economizar</div>
+            <div class="pv" id="prevEconomizar">—</div>
+            <div class="pp" id="prevEconomizarPreco">—</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="continue-btn" style="margin-top:14px;" onclick="autenticar()">Escolher Vaga 02 → Autenticar</button>
+    </div>
+
+    <!-- STEP 1: RFID -->
+    <div id="step1" class="rfid-hero hidden">
+      <div class="rfid-ring" onclick="irParaEscolha()">📶</div>
+      <div class="rfid-title">Toque para aproximar o cartão</div>
+      <div class="rfid-sub"><b>Mercadinho Bom Preço</b><br>Vaga 02 · Conector Tipo II</div>
+    </div>
+
+    <!-- STEP 2: choice -->
+    <div id="step2" class="hidden">
+      <div class="step-eyebrow">Etapa 2 de 4</div>
+      <div class="step-title">Como você quer carregar?</div>
+      <div class="step-sub">Cartão reconhecido · Vaga 02</div>
+
+      <div class="choice-card" onclick="escolherModo('urgente')">
+        <div class="choice-icon a">⚡</div>
+        <div>
+          <div class="tag">Opção 1</div>
+          <div class="name">Urgente</div>
+          <div class="desc">Tarifa cheia, sem espera. Usa a fonte disponível (solar + rede) — o preço é fixo pela prioridade garantida, não pela origem da energia.</div>
+          <div class="avail" id="choiceUrgentePower">—</div>
+        </div>
+      </div>
+
+      <div class="choice-card" onclick="escolherModo('economizar')">
+        <div class="choice-icon b">🌱</div>
+        <div>
+          <div class="tag">Opção 2</div>
+          <div class="name">Sem pressa, economizar</div>
+          <div class="desc" id="choiceEcoDesc">Sistema escolhe a fonte mais barata.</div>
+          <div class="avail" id="choiceEconomizarPower">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: result -->
+    <div id="step3" class="hidden">
+      <div class="step-eyebrow">Etapa 3 de 4</div>
+      <div class="result-tag">Fonte selecionada pela IA</div>
+      <div id="sourceBadge" class="source-badge solar">☀️ Energia solar disponível</div>
+
+      <div id="throttleWarning" class="throttle-warning hidden">
+        ⚠️ Com as vagas 01 e 03 ocupadas, sua potência real ficou abaixo do nominal — o medidor do estabelecimento (8 kW) não comporta todo mundo em potência plena.
+      </div>
+
+      <div class="price-box">
+        <div class="label">Tarifa desta sessão</div>
+        <div class="value" id="priceValue">R$ 0,00<span> /kWh</span></div>
+      </div>
+
+      <div class="kwh-input-row">
+        <label>Quanto quer carregar?</label>
+        <input type="number" id="kwhInput" value="20" min="1" max="80" oninput="atualizarSimulacao()">
+        <span class="unit">kWh</span>
+      </div>
+
+      <div class="meta-row"><span>Potência real alocada</span><span class="highlight" id="potencia">—</span></div>
+      <div class="meta-row"><span>Tempo estimado</span><span class="highlight" id="tempoEstimado">—</span></div>
+      <div class="meta-row"><span>Valor total da sessão</span><span class="highlight" id="valorTotal">—</span></div>
+
+      <button class="continue-btn secondary" style="margin-top:14px;" onclick="irParaPagamento()">Simular pagamento via Pix</button>
+    </div>
+
+    <!-- STEP 4: payment receipt -->
+    <div id="step4" class="hidden receipt">
+      <div class="receipt-icon">✅</div>
+      <div class="receipt-title">Pagamento simulado</div>
+      <div class="receipt-sub">Cobrança automática ao final da sessão</div>
+
+      <div class="pix-tag">🔗 Pix · cobrança automática</div>
+
+      <div class="pix-box">
+        <div class="row"><span>Posto</span><span>Mercadinho Bom Preço · Vaga 02</span></div>
+        <div class="row"><span>Fonte de energia</span><span id="rcpFonte">—</span></div>
+        <div class="row"><span>Potência real</span><span id="rcpPotencia">—</span></div>
+        <div class="row"><span>Energia consumida</span><span id="rcpKwh">—</span></div>
+        <div class="row"><span>Tempo de sessão</span><span id="rcpTempo">—</span></div>
+        <div class="row"><span>Tarifa aplicada</span><span id="rcpTarifa">—</span></div>
+        <div class="row total"><span>Total cobrado</span><span id="rcpTotal">—</span></div>
+      </div>
+
+      <button class="reset-btn" onclick="reiniciar()">↺ Simular nova sessão</button>
+    </div>
+  </div>
+</div>
+
+<div class="about">
+  <div class="about-item">
+    <div class="ic">🔌</div>
+    <div class="t">Camada Física</div>
+    <div class="d">Carregador + medidor Modbus</div>
+  </div>
+  <div class="about-item">
+    <div class="ic">📡</div>
+    <div class="t">Conectividade</div>
+    <div class="d">Coleta por consulta periódica</div>
+  </div>
+  <div class="about-item">
+    <div class="ic">🧠</div>
+    <div class="t">Camada Digital</div>
+    <div class="d">IA decide fonte + preço + potência</div>
+  </div>
+</div>
+
+<div class="sources-box">
+  <div class="t">Base das tarifas, margem e regras usadas</div>
+  <ul>
+    <li>Custo de aquisição da energia pelo estabelecimento (Grupo B3 comercial, referência CEMIG 2026): ~R$ 0,86/kWh</li>
+    <li>Urgente (R$ 1,89/kWh): ~120% de margem sobre o custo — condizente com a faixa real de carregamento rápido comercial no Brasil (R$ 1,50–2,00/kWh)</li>
+    <li>Economizar + rede (R$ 1,05/kWh): ~22% de margem sobre o custo de aquisição — mais barato que o Urgente, mas sem operar no prejuízo</li>
+    <li>Economizar + solar (R$ 0,55/kWh): custo marginal da energia solar já gerada é quase zero, então a margem é alta mesmo com preço baixo pro motorista</li>
+    <li>Potência nominal: 11 kW (urgente) e 5,5 kW (economizar), com base no GW11K-HCA-20 (trifásico) — faixa real de carregadores comerciais/semirrápidos (11-22 kW) usados em shoppings, condomínios e comércios</li>
+    <li>Capacidade do medidor: 20 kW só de rede, chegando a 30 kW quando a planta solar está ativa (20 kW rede + 10 kW extras de geração solar) — dentro do limite de conexão Grupo B (até 75 kW)</li>
+    <li>"Urgente" também usa energia solar quando disponível — a tarifa fixa é pela prioridade/velocidade garantida, não pela origem da energia; só "Economizar" tem desconto condicionado à fonte</li>
+    <li>Quando a soma das vagas ativas ultrapassa a capacidade disponível, o sistema reduz primeiro o "Economizar"; se mesmo no piso mínimo não couber, reduz todas as vagas proporcionalmente, inclusive o "Urgente"</li>
+  </ul>
+</div>
+
+<div class="footnote">Protótipo de demonstração — sem banco de dados, todo o cálculo acontece localmente no navegador. Tarifas de referência de mercado (2026); valores reais devem ser definidos comercialmente pelo estabelecimento. <b>WeCharge</b> — solução para a trilha ChargeGrid Intelligence · FIAP × GoodWe · EV Challenge 2026.</div>
+
+<script>
+  // ---------- Constantes ----------
+  const TARIFA_URGENTE = 1.89; // ~120% de margem sobre o custo de aquisicao (~R$0,86/kWh) - condizente com o mercado real de recarga rapida
+  const TARIFA_SOLAR = 0.55;   // custo marginal da energia solar ja gerada e quase zero - margem alta
+  const TARIFA_REDE = 1.05;    // ~22% de margem sobre o custo de aquisicao - garante lucro real (R$0,85 estava abaixo do custo)
+
+  const POTENCIA_URGENTE_NOM = 11;     // kW nominal - GW11K-HCA-20 (trifásico, faixa comercial real: 11-22kW)
+  const POTENCIA_ECONOMIZAR_NOM = 5.5; // kW nominal - metade da potência, ritmo mais lento
+  const POTENCIA_MIN_ECONOMIZAR = 2;   // kW piso mínimo
+  const CAPACIDADE_REDE = 20;         // kW - conexão de rede do Mercadinho Bom Preço
+  const CAPACIDADE_BONUS_SOLAR = 10;  // kW extras gerados quando a planta solar está ativa
+
+  let solarDisponivel = false;
+
+  function capacidadeAtual() {
+    return solarDisponivel ? CAPACIDADE_REDE + CAPACIDADE_BONUS_SOLAR : CAPACIDADE_REDE;
+  }
+  let vaga2Mode = null; // definido quando o usuário escolhe
+
+  // ---------- Motor de alocação (2 níveis) ----------
+  // occupancy: array de 3 valores 'off' | 'urgente' | 'economizar' (índice 0,1,2 = vaga1,2,3)
+  function alocar(occupancy) {
+    const CAPACIDADE_MEDIDOR = capacidadeAtual();
+    const urgentIdx = [];
+    const ecoIdx = [];
+    occupancy.forEach((v, i) => {
+      if (v === 'urgente') urgentIdx.push(i);
+      if (v === 'economizar') ecoIdx.push(i);
+    });
+
+    const urgentDemand = urgentIdx.length * POTENCIA_URGENTE_NOM;
+    const ecoDemandFull = ecoIdx.length * POTENCIA_ECONOMIZAR_NOM;
+    const totalDemandFull = urgentDemand + ecoDemandFull;
+
+    let urgentPower = POTENCIA_URGENTE_NOM;
+    let ecoPower = POTENCIA_ECONOMIZAR_NOM;
+    let nivel = 'ok';
+
+    if (totalDemandFull > CAPACIDADE_MEDIDOR) {
+      if (urgentDemand > CAPACIDADE_MEDIDOR) {
+        // Nem os "Urgente" sozinhos cabem -> reduz TODOS proporcionalmente
+        // (urgente e economizar, este último a partir do piso mínimo)
+        const demandaComPiso = urgentDemand + (ecoIdx.length * POTENCIA_MIN_ECONOMIZAR);
+        const fator = demandaComPiso > 0 ? CAPACIDADE_MEDIDOR / demandaComPiso : 1;
+        urgentPower = POTENCIA_URGENTE_NOM * fator;
+        ecoPower = ecoIdx.length > 0 ? POTENCIA_MIN_ECONOMIZAR * fator : 0;
+        nivel = 'todos-reduzidos';
+      } else {
+        // Urgente cabe sozinho -> tenta reduzir só o Economizar primeiro
+        const remaining = CAPACIDADE_MEDIDOR - urgentDemand;
+        const ecoTentativo = ecoIdx.length > 0 ? remaining / ecoIdx.length : 0;
+
+        if (ecoIdx.length === 0 || ecoTentativo >= POTENCIA_MIN_ECONOMIZAR) {
+          ecoPower = ecoIdx.length > 0 ? ecoTentativo : POTENCIA_ECONOMIZAR_NOM;
+          nivel = 'eco-reduzido';
+        } else {
+          // Mesmo no piso mínimo o Economizar não cabe -> reduz TODOS proporcionalmente
+          const demandaComPiso = urgentDemand + (ecoIdx.length * POTENCIA_MIN_ECONOMIZAR);
+          const fator = demandaComPiso > 0 ? CAPACIDADE_MEDIDOR / demandaComPiso : 1;
+          urgentPower = POTENCIA_URGENTE_NOM * fator;
+          ecoPower = POTENCIA_MIN_ECONOMIZAR * fator;
+          nivel = 'todos-reduzidos';
+        }
+      }
+    }
+
+    const result = occupancy.map(v => {
+      if (v === 'off') return { power: 0, mode: 'off' };
+      if (v === 'urgente') return { power: urgentPower, mode: 'urgente' };
+      return { power: ecoPower, mode: 'economizar' };
+    });
+
+    return { result, nivel };
+  }
+
+  function getOccupancyAtual(vaga2Override) {
+    const o0 = document.getElementById('occ0').value;
+    const o2 = document.getElementById('occ2').value;
+    return [o0, vaga2Override, o2];
+  }
+
+  // ---------- STEP 0: dashboard de vagas ----------
+  function toggleSolarGlobal() {
+    solarDisponivel = !solarDisponivel;
+    document.getElementById('solarSwitch').classList.toggle('on', solarDisponivel);
+    document.getElementById('solarLabel').innerHTML = solarDisponivel
+      ? '☀️ <b>Energia solar disponível</b>'
+      : '🔌 <b>Sem energia solar disponível</b>';
+    recalcularVagas();
+  }
+
+  function recalcularVagas() {
+    // Atualiza o texto de capacidade sempre, inclusive no carregamento inicial da página
+    document.getElementById('capacityLine').innerHTML = solarDisponivel
+      ? 'Capacidade total agora: <b>' + capacidadeAtual().toFixed(1) + ' kW</b> (rede + solar)'
+      : 'Capacidade total agora: <b>' + capacidadeAtual().toFixed(1) + ' kW</b> (só rede)';
+
+    // Ocupação atual (vaga 2 ainda livre = 'off')
+    const occNow = getOccupancyAtual('off');
+    const { result: resNow } = alocar(occNow);
+
+    setVagaDisplay('occPower0', resNow[0]);
+    setVagaDisplay('occPower2', resNow[2]);
+
+    // Preview: e se a vaga 2 entrasse como urgente?
+    const occUrg = getOccupancyAtual('urgente');
+    const { result: resUrg } = alocar(occUrg);
+    setPreview('prevUrgente', resUrg[1], POTENCIA_URGENTE_NOM);
+    document.getElementById('prevUrgentePreco').textContent = 'R$ ' + TARIFA_URGENTE.toFixed(2).replace('.', ',') + '/kWh';
+
+    // Preview: e se a vaga 2 entrasse como economizar?
+    const occEco = getOccupancyAtual('economizar');
+    const { result: resEco } = alocar(occEco);
+    setPreview('prevEconomizar', resEco[1], POTENCIA_ECONOMIZAR_NOM);
+    const tarifaEco = solarDisponivel ? TARIFA_SOLAR : TARIFA_REDE;
+    document.getElementById('prevEconomizarPreco').textContent = 'R$ ' + tarifaEco.toFixed(2).replace('.', ',') + '/kWh' + (solarDisponivel ? ' (solar)' : ' (rede)');
+  }
+
+  function setVagaDisplay(elId, slot) {
+    const el = document.getElementById(elId);
+    if (slot.mode === 'off') { el.textContent = '—'; el.className = 'occ-power'; return; }
+    const nominal = slot.mode === 'urgente' ? POTENCIA_URGENTE_NOM : POTENCIA_ECONOMIZAR_NOM;
+    const isFull = Math.abs(slot.power - nominal) < 0.05;
+    el.textContent = slot.power.toFixed(1) + ' kW';
+    el.className = 'occ-power ' + (isFull ? 'full' : 'throttled');
+  }
+
+  function setPreview(elId, slot, nominal) {
+    const el = document.getElementById(elId);
+    const isFull = Math.abs(slot.power - nominal) < 0.05;
+    el.textContent = slot.power.toFixed(1) + ' kW';
+    el.className = 'pv ' + (isFull ? 'full' : 'throttled');
+  }
+
+  // ---------- Navegação ----------
+  function setStep(n) {
+    document.querySelectorAll('.progress .dot').forEach((dot, i) => {
+      dot.classList.remove('active', 'done');
+      if (i < n - 1) dot.classList.add('done');
+      if (i === n - 1) dot.classList.add('active');
+    });
+  }
+
+  function autenticar() {
+    document.getElementById('step0').classList.add('hidden');
+    document.getElementById('step1').classList.remove('hidden');
+    setStep(1);
+  }
+
+  function irParaEscolha() {
+    document.getElementById('step1').classList.add('hidden');
+    document.getElementById('step2').classList.remove('hidden');
+    setStep(2);
+
+    // Atualiza os cards de escolha com a potência real prevista agora
+    const occUrg = getOccupancyAtual('urgente');
+    const { result: resUrg } = alocar(occUrg);
+    const urgSlot = resUrg[1];
+    const isFullU = Math.abs(urgSlot.power - POTENCIA_URGENTE_NOM) < 0.05;
+    document.getElementById('choiceUrgentePower').textContent = 'Você receberia ' + urgSlot.power.toFixed(1) + ' kW agora';
+    document.getElementById('choiceUrgentePower').className = 'avail ' + (isFullU ? 'full' : 'throttled');
+
+    const occEco = getOccupancyAtual('economizar');
+    const { result: resEco } = alocar(occEco);
+    const ecoSlot = resEco[1];
+    const isFullE = Math.abs(ecoSlot.power - POTENCIA_ECONOMIZAR_NOM) < 0.05;
+    document.getElementById('choiceEconomizarPower').textContent = 'Você receberia ' + ecoSlot.power.toFixed(1) + ' kW agora';
+    document.getElementById('choiceEconomizarPower').className = 'avail ' + (isFullE ? 'full' : 'throttled');
+
+    document.getElementById('choiceEcoDesc').textContent = solarDisponivel
+      ? 'Sistema usaria energia solar (mais barata).'
+      : 'Sem sol agora — usaria a rede elétrica.';
+  }
+
+  function escolherModo(modo) {
+    vaga2Mode = modo;
+    document.getElementById('step2').classList.add('hidden');
+    mostrarResultado();
+  }
+
+  function mostrarResultado() {
+    setStep(3);
+    document.getElementById('step3').classList.remove('hidden');
+
+    const occFinal = getOccupancyAtual(vaga2Mode);
+    const { result: resFinal, nivel } = alocar(occFinal);
+    const meuSlot = resFinal[1];
+
+    const badge = document.getElementById('sourceBadge');
+    let tarifa;
+    if (vaga2Mode === 'urgente') {
+      badge.className = 'source-badge urgente';
+      badge.innerHTML = solarDisponivel
+        ? '⚡ Potência máxima (rede + solar disponível)'
+        : '⚡ Potência máxima (rede)';
+      tarifa = TARIFA_URGENTE;
+    } else if (solarDisponivel) {
+      badge.className = 'source-badge solar';
+      badge.innerHTML = '☀️ Energia solar disponível';
+      tarifa = TARIFA_SOLAR;
+    } else {
+      badge.className = 'source-badge rede';
+      badge.innerHTML = '🔌 Energia da rede elétrica';
+      tarifa = TARIFA_REDE;
+    }
+
+    document.getElementById('priceValue').innerHTML = 'R$ ' + tarifa.toFixed(2).replace('.', ',') + '<span> /kWh</span>';
+    document.getElementById('potencia').textContent = meuSlot.power.toFixed(1) + ' kW';
+
+    const nominal = vaga2Mode === 'urgente' ? POTENCIA_URGENTE_NOM : POTENCIA_ECONOMIZAR_NOM;
+    const foiReduzido = meuSlot.power < nominal - 0.05;
+    document.getElementById('throttleWarning').classList.toggle('hidden', !foiReduzido);
+
+    window._meuSlotPower = meuSlot.power;
+    window._tarifaAtual = tarifa;
+    window._fonteLabel = vaga2Mode === 'urgente'
+      ? (solarDisponivel ? '⚡ Urgente (rede + solar)' : '⚡ Urgente (rede)')
+      : (solarDisponivel ? '☀️ Solar' : '🔌 Rede elétrica');
+
+    atualizarSimulacao();
+  }
+
+  function atualizarSimulacao() {
+    const kwh = parseFloat(document.getElementById('kwhInput').value) || 0;
+    const potencia = window._meuSlotPower || 1;
+    const horas = kwh / potencia;
+    const h = Math.floor(horas);
+    const min = Math.round((horas - h) * 60);
+    document.getElementById('tempoEstimado').textContent = h + 'h ' + min + 'min';
+
+    const total = kwh * (window._tarifaAtual || 0);
+    document.getElementById('valorTotal').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+  }
+
+  function irParaPagamento() {
+    const kwh = parseFloat(document.getElementById('kwhInput').value) || 0;
+    const potencia = window._meuSlotPower || 1;
+    const horas = kwh / potencia;
+    const h = Math.floor(horas);
+    const min = Math.round((horas - h) * 60);
+    const total = kwh * (window._tarifaAtual || 0);
+
+    document.getElementById('rcpFonte').textContent = window._fonteLabel;
+    document.getElementById('rcpPotencia').textContent = potencia.toFixed(1) + ' kW';
+    document.getElementById('rcpKwh').textContent = kwh + ' kWh';
+    document.getElementById('rcpTempo').textContent = h + 'h ' + min + 'min';
+    document.getElementById('rcpTarifa').textContent = 'R$ ' + (window._tarifaAtual || 0).toFixed(2).replace('.', ',') + '/kWh';
+    document.getElementById('rcpTotal').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('step4').classList.remove('hidden');
+  }
+
+  function reiniciar() {
+    document.getElementById('step4').classList.add('hidden');
+    document.getElementById('step0').classList.remove('hidden');
+    document.getElementById('kwhInput').value = 20;
+    vaga2Mode = null;
+    document.querySelectorAll('.progress .dot').forEach(d => d.classList.remove('active','done'));
+    recalcularVagas();
+  }
+
+  document.addEventListener('DOMContentLoaded', recalcularVagas);
+</script>
+
+</body>
+</html>
