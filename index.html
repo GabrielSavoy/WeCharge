@@ -1708,7 +1708,7 @@
     if (appState.meuModo && appState.meuPower !== null) {
       const statusCls = appState.paymentDone ? 'done' : (appState.meuPower>0 ? 'charging':'paused');
       const statusTxt = appState.paymentDone ? 'Finalizada' : (appState.meuPower>0 ? 'Carregando':'Pausada');
-      rows += '<tr><td><div class="st-vaga-num">02</div><div class="st-vaga-sub">Ocupada</div></td><td>EV-01 · Gabriel</td><td>' + (appState.meuModo==='urgente'?'⚡ Urgente':'🌱 Economizar') + '</td><td>' + appState.meuPower.toFixed(1) + ' kW</td><td><span class="st-badge ' + statusCls + '">' + statusTxt + '</span></td><td><div class="st-progress-track"><div class="st-progress-fill" style="width:' + pctGeral + '%"></div></div>' + (appState.chargingStarted?pctGeral+'%':'—') + '</td></tr>';
+      rows += '<tr><td><div class="st-vaga-num">02</div><div class="st-vaga-sub">Ocupada</div></td><td>BYD Dolphin · Gabriel</td><td>' + (appState.meuModo==='urgente'?'⚡ Urgente':'🌱 Economizar') + '</td><td>' + appState.meuPower.toFixed(1) + ' kW</td><td><span class="st-badge ' + statusCls + '">' + statusTxt + '</span></td><td><div class="st-progress-track"><div class="st-progress-fill" style="width:' + pctGeral + '%"></div></div>' + (appState.chargingStarted?pctGeral+'%':'—') + '</td></tr>';
     } else {
       rows += '<tr><td><div class="st-vaga-num">02</div><div class="st-vaga-sub">Livre</div></td><td>—</td><td>—</td><td>0 kW</td><td><span class="st-badge waiting">Aguardando</span></td><td>—</td></tr>';
     }
