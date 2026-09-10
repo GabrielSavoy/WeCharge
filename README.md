@@ -1,4 +1,4 @@
-# WeCharge — Gerenciamento Inteligente de Recarga de Veículos Elétricos
+# ⚡ WeCharge — Gerenciamento Inteligente de Recarga de Veículos Elétricos
 
 **Desafio GoodWe — FIAP | Sprint 3: Prototipagem Funcional e Integração**
 
@@ -10,7 +10,7 @@
 
 | Integrante |
 |---|
-| Victor Vidigal  |
+| Victor |
 | Gabriel Savoy |
 | Luigi Borgheti |
 | Raphael Tien |
@@ -95,4 +95,4 @@ Demonstração realizada com 3 veículos conectados simultaneamente na estação
 
 ## 8. Vídeo de Demonstração
 
-🎥 [https://youtu.be/otRxV-4UQIk?si=XSkkSl9pimi1HEQq]
+🎥 https://youtu.be/otRxV-4UQIk?si=XSkkSl9pimi1HEQq
