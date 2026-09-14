@@ -1,4 +1,4 @@
-#  WeCharge — Gerenciamento Inteligente de Recarga de Veículos Elétricos
+# ⚡ WeCharge — Gerenciamento Inteligente de Recarga de Veículos Elétricos
 
 **Desafio GoodWe — FIAP | Sprint 3: Prototipagem Funcional e Integração**
 
@@ -10,10 +10,10 @@
 
 | Integrante |
 |---|
-| Victor Vidigal RM 571318|
-| Gabriel Savoy RM 568991|
-| Luigi Borgheti RM 569958|
-| Raphael Tien RM 570261|
+| Victor Vidigal RM 571318 |
+| Gabriel Savoy RM 568991 |
+| Luigi Borgheti RM 569958 |
+| Raphael Tien RM 570261 |
 
 ## 3. Contexto e Objetivo
 
@@ -38,6 +38,17 @@ O fluxo da recarga acontece, de forma resumida, assim:
 - No modo **Economizar**, o Arduino lê o sensor de luminosidade BH1750 — usado na maquete como um proxy físico e didático da disponibilidade de energia solar: acima de 20 lux, aciona o LED verde (fonte solar, R$ 0,89/kWh); abaixo disso, aciona o LED vermelho (rede, R$ 1,42/kWh);
 - Após alguns segundos, os LEDs se apagam e o display LCD passa a mostrar "CARREGANDO", enquanto o Arduino avisa o site de que a recarga está em curso;
 - Um comando de reinício, enviado pelo botão "Reiniciar demonstração" do site, devolve toda a maquete ao estado inicial, pronta para uma nova identificação por RFID.
+
+**Imagens do protótipo físico:**
+
+![Circuito na protoboard: Arduino, RFID, BH1750, LCD e LEDs conectados](imagens-prototipo/maquete-circuito-breadboard.jpeg)
+*Montagem do circuito na protoboard, com o Arduino, o leitor RFID, o sensor de luz BH1750, o display LCD e os LEDs de status.*
+
+![Maquete finalizada da estação de recarga, com o veículo de teste](imagens-prototipo/maquete-frente-fechada.jpeg)
+*Maquete finalizada da estação, com o compartimento do Arduino, o display de status e o passo a passo de "Como carregar" para o usuário.*
+
+![Maquete integrada em tempo real ao painel WeCharge Control](imagens-prototipo/maquete-integrada-dashboard.jpeg)
+*Maquete física integrada em tempo real ao painel administrativo WeCharge Control, exibido no monitor ao lado.*
 
 **Componentes físicos (maquete/protótipo):**
 - Arduino UNO com leitor RFID RC522, para identificação do veículo/usuário na entrada da estação;
