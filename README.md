@@ -13,7 +13,7 @@
 | Victor Vidigal RM 571318|
 | Gabriel Savoy RM 568991|
 | Luigi Borgheti RM 569998|
-| Raphael Tien 570261|
+| Raphael Tien RM 570261|
 
 ## 3. Contexto e Objetivo
 
