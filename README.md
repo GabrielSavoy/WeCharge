@@ -10,10 +10,10 @@
 
 | Integrante |
 |---|
-| Victor Vidigal |
-| Gabriel Savoy |
-| Luigi Borgheti |
-| Raphael Tien |
+| Victor Vidigal RM 571318|
+| Gabriel Savoy RM 568991|
+| Luigi Borgheti RM 569998|
+| Raphael Tien 570261|
 
 ## 3. Contexto e Objetivo
 
